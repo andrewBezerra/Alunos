@@ -5,29 +5,36 @@ namespace Alunos.Infra.Repositorios
 {
 	public class AlunoRepositorioSqlServer : IAlunoRepositorio
 	{
-		public Task Adicionar(Aluno aluno)
+		private readonly AlunosContexto _contexto;
+
+		public AlunoRepositorioSqlServer(AlunosContexto contexto)
 		{
-			throw new NotImplementedException();
+			_contexto = contexto;
 		}
 
-		public Task Atualizar(Aluno aluno)
+		public async Task Adicionar(Aluno aluno)
 		{
-			throw new NotImplementedException();
+			await _contexto.AddAsync(aluno);
 		}
 
-		public Task<bool> Existe(Guid id)
+		public async Task<Aluno> Atualizar(Aluno aluno)
 		{
-			throw new NotImplementedException();
+			return await Task.Run(() => _contexto.Update(aluno).Entity);
 		}
 
-		public Task<Aluno> ObterPorId(Guid id)
+		public async Task<bool> Existe(Guid id)
 		{
-			throw new NotImplementedException();
+			return await _contexto.Alunos.AnyAsync(x => x.Id == id);
 		}
 
-		public Task<IEnumerable<Aluno>> ObterTodos()
+		public async Task<Aluno> ObterPorId(Guid id)
 		{
-			throw new NotImplementedException();
+			return await _contexto.Alunos.Where(x => x.Id == id).FirstAsync();
+		}
+
+		public async Task<IEnumerable<Aluno>> ObterTodos()
+		{
+			return await _contexto.Alunos.ToListAsync();
 		}
 
 		public Task Remover(Guid id)
